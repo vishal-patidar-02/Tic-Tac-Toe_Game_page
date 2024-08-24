@@ -42,7 +42,7 @@ body {
     -1.2px -1.2px 1.2px whitesmoke;
 }
 
-#Reset-btn {
+ .btn {
     padding: 1rem;
     font-size: 1.25rem;
     background-color: #001011;
@@ -50,15 +50,15 @@ body {
     border-radius: 1rem;
 }
 
-#new-btn {
+/* #new-btn {
     padding: 1rem;
     font-size: 1.25rem;
     background-color: #001011;
     color: #fff;
     border-radius: 1rem;
-}
+} */
 
-#msg{
+.msg{
     color: #D91E36;
     font-size: 6vmin;
     font-weight: 600;

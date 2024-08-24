@@ -2,7 +2,19 @@ let boxes = document.querySelectorAll(".box");
 let resetBtn = document.querySelector("#Reset-btn");
 let newGameBtn = document.querySelector("#new-btn");
 let msgContainer = document.querySelector(".msg-container");
-let msg = document.querySelector("#msg");
+let WinMsg = document.querySelector("#WinMsg");
+let SingleBtn = document.querySelector("#Single-btn");
+let DoubleBtn = document.querySelector("#Double-btn");
+
+let SingleValid = false;
+let count = 4;
+
+SingleBtn.addEventListener("click", () => {
+  resetGame();
+  document.querySelector("h3").classList.remove("hide");
+  SingleBtn.classList.add("hide");
+  SingleValid = true;
+});
 
 let turnO = true; //playerO and playerX
 
@@ -19,29 +31,77 @@ const winPatterns = [
 
 const resetGame = () => {
   turnO = true;
+  SingleValid = false;
+  count=4;
   enableBoxes();
   msgContainer.classList.add("hide");
+  document.querySelector("h3").classList.add("hide");
+  SingleBtn.classList.remove("hide");
 };
 
 boxes.forEach((box) => {
   box.addEventListener("click", () => {
-    console.log("box was clicked");
-    if (turnO) {
-      box.innerText = "O";
-      turnO = false;
-    } else {
-      box.innerText = "X";
-      turnO = true;
-    }
-    box.disabled = true;
+    if (!SingleValid) {
+      if (turnO) {
+        //two player mode
+        box.innerText = "O";
+        turnO = false;
+      } else {
+        box.innerText = "X";
+        turnO = true;
+      }
+      box.disabled = true;
 
-    checkWinner();
+      checkWinner(); //checking winner
+    } else {
+      if (turnO) {
+        //single player mode
+        box.innerText = "O";
+        turnO = false;
+        box.disabled = true;
+        makeRandomMove(); //automatic Computer Response
+      }
+      checkWinner();
+    }
   });
 });
 
-const ShowWinner = (winner) => {
-  msg.innerText = `Congratulations, Winner is ${winner}`;
+
+//Make Computer like response
+const makeRandomMove = () => {
+
+  if(SingleValid){
+    setTimeout(() => {
+      let randIdx = Math.floor(Math.random() * 9); //creating random index
+      if (boxes[randIdx].disabled === false) {
+        boxes[randIdx].innerText = "X";
+        boxes[randIdx].disabled = true;
+        turnO = true;
+        count--;
+        checkWinner();
+      } else {
+        if(count>0){
+          makeRandomMove();
+        }
+      }
+    }, 500);
+  }
+  
+};
+
+const ShowWinnerInDouble = (winner) => {
+  WinMsg.innerText = `Congratulations, Winner is ${winner}`;
   msgContainer.classList.remove("hide");
+};
+
+const ShowWinnerInSingle = (winner) => {
+  if (winner == "O") {
+    WinMsg.innerText = `Congratulations, You Win!!`;
+    msgContainer.classList.remove("hide");
+  } else {
+    WinMsg.innerText = `You lost against computer`;
+    msgContainer.classList.remove("hide");
+  }
 };
 
 let disableBoxes = () => {
@@ -66,13 +126,17 @@ const checkWinner = () => {
     if (pos1val != "" && pos2val != "" && pos3val != "") {
       if (pos1val == pos2val && pos2val == pos3val) {
         console.log("Winner", pos1val);
-        ShowWinner(pos1val);
+        if (!SingleValid) {
+          ShowWinnerInDouble(pos1val); //Double player response
+        } else {
+          ShowWinnerInSingle(pos1val); //Single player response
+        }
+
         disableBoxes();
+        SingleValid=false;
       }
     }
   }
 };
-
-
 newGameBtn.addEventListener("click", resetGame);
 resetBtn.addEventListener("click", resetGame);
